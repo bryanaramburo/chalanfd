@@ -1,0 +1,8 @@
+{
+  "name": "Chalan & Bro Tint Studio",
+  "description": "Premium automotive and architectural window tinting in GA. Family owned since 2024.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

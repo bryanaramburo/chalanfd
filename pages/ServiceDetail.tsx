@@ -61,6 +61,27 @@ const ServiceDetail: React.FC = () => {
     return date < today || date.getDay() === 0;
   };
 
+  // Generate time slots based on day of week and hours of operation
+  const getTimeSlotsForDate = (dateStr: string): string[] => {
+    if (!dateStr) return [];
+    const date = new Date(dateStr + 'T12:00:00'); // Add time to avoid timezone issues
+    const dayOfWeek = date.getDay();
+
+    // Sunday (0) - Closed
+    if (dayOfWeek === 0) return [];
+
+    // Friday (5) and Saturday (6) - 7:00 AM - 8:00 PM
+    if (dayOfWeek === 5 || dayOfWeek === 6) {
+      return [
+        '07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
+        '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM'
+      ];
+    }
+
+    // Monday (1) - Thursday (4) - 6:00 AM - 11:00 AM
+    return ['06:00 AM', '07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM'];
+  };
+
   if (!service) return null;
 
   const handleBookingSubmit = (e: React.FormEvent) => {
@@ -226,7 +247,7 @@ const ServiceDetail: React.FC = () => {
 
                         {bookingData.date && (
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-2 animate-in fade-in">
-                            {['09:00 AM', '11:00 AM', '01:00 PM', '03:00 PM', '05:00 PM'].map(slot => (
+                            {getTimeSlotsForDate(bookingData.date).map(slot => (
                               <button key={slot} onClick={() => setBookingData({...bookingData, time: slot})} className={`py-3 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${bookingData.time === slot ? 'bg-brand border-brand text-white' : 'bg-white/5 border-white/10 text-zinc-500'}`}>{slot}</button>
                             ))}
                           </div>

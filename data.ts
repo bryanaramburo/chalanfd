@@ -1,6 +1,6 @@
 import { BusinessInfo, Service } from './types';
 
-export const LOGO_URL = "https://ibb.co/pBzwzcjj";
+export const LOGO_URL = "/logo.png";
 
 export const BUSINESS_INFO: BusinessInfo = {
   name: "Chalan & Bro Tint Studio",

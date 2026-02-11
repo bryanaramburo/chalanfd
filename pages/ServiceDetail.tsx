@@ -68,7 +68,10 @@ const ServiceDetail: React.FC = () => {
   const getTimeSlotsForDate = (dateString: string): string[] => {
     if (!dateString) return [];
     
-    const date = new Date(dateString);
+    // Parse the date string manually to avoid timezone issues
+    // dateString format is "YYYY-MM-DD"
+    const [year, month, day] = dateString.split('-').map(Number);
+    const date = new Date(year, month - 1, day); // month is 0-indexed
     const dayOfWeek = date.getDay();
     
     // Sunday (0) - CLOSED (shouldn't reach here since Sundays are disabled)

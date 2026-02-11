@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { SERVICES, BUSINESS_INFO } from '../data';
 import { ChevronLeft, ChevronRight, Calendar, Clock, ShieldCheck, CheckCircle2, Send, Loader2, Info } from 'lucide-react';
@@ -9,6 +9,9 @@ const ServiceDetail: React.FC = () => {
   const service = SERVICES.find(s => s.id === id);
 
   const isArchitectural = id === 'architectural-tinting';
+
+  // Ref for the booking calendar section (for auto-scroll on mobile)
+  const bookingCalendarRef = useRef<HTMLDivElement>(null);
 
   const [bookingStep, setBookingStep] = useState(1);
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
@@ -58,10 +61,62 @@ const ServiceDetail: React.FC = () => {
     if (!date) return true;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    return date < today || date.getDay() === 0;
+    return date < today || date.getDay() === 0; // Sunday (0) is closed
+  };
+
+  // Get available time slots based on day of week
+  const getTimeSlotsForDate = (dateString: string): string[] => {
+    if (!dateString) return [];
+    
+    const date = new Date(dateString);
+    const dayOfWeek = date.getDay();
+    
+    // Sunday (0) - CLOSED (shouldn't reach here since Sundays are disabled)
+    if (dayOfWeek === 0) return [];
+    
+    // Monday (1) - Thursday (4): 6:00 AM - 11:00 AM
+    if (dayOfWeek >= 1 && dayOfWeek <= 4) {
+      return ['06:00 AM', '07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM'];
+    }
+    
+    // Friday (5) - Saturday (6): 7:00 AM - 8:00 PM
+    if (dayOfWeek === 5 || dayOfWeek === 6) {
+      return [
+        '07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
+        '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM',
+        '07:00 PM', '08:00 PM'
+      ];
+    }
+    
+    return [];
   };
 
   if (!service) return null;
+
+  // Handle package selection with TOGGLE functionality
+  const handlePackageSelect = (pkg: { name: string; price: number }) => {
+    if (selectedPackage === pkg.name) {
+      // If already selected, DESELECT it
+      setSelectedPackage(null);
+      setSelectedPrice(null);
+      setBookingData(prev => ({ ...prev, package: '', price: 0 }));
+    } else {
+      // Select the package
+      setSelectedPackage(pkg.name);
+      setSelectedPrice(pkg.price);
+      setBookingData(prev => ({ ...prev, package: pkg.name, price: pkg.price }));
+      
+      // Auto-scroll to booking calendar on mobile (screen width < 1024px)
+      if (window.innerWidth < 1024 && bookingCalendarRef.current) {
+        setTimeout(() => {
+          bookingCalendarRef.current?.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
+        }, 100); // Small delay to ensure state updates first
+      }
+    }
+  };
 
   const handleBookingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -146,11 +201,7 @@ const ServiceDetail: React.FC = () => {
                 {service.packages.map((pkg, i) => (
                   <button 
                     key={i} 
-                    onClick={() => {
-                      setSelectedPackage(pkg.name);
-                      setSelectedPrice(pkg.price);
-                      setBookingData(prev => ({ ...prev, package: pkg.name, price: pkg.price }));
-                    }}
+                    onClick={() => handlePackageSelect(pkg)}
                     className={`p-6 md:p-8 bg-zinc-900/50 border rounded-[1.5rem] flex flex-col sm:flex-row justify-between items-center gap-6 transition-all text-left w-full ${selectedPackage === pkg.name ? 'border-brand ring-1 ring-brand' : 'border-white/5 hover:border-white/20'}`}
                   >
                     <div className="space-y-2 text-center sm:text-left">
@@ -167,7 +218,8 @@ const ServiceDetail: React.FC = () => {
           </div>
 
           <div className="relative">
-            <div className="sticky top-40 bg-zinc-900/40 backdrop-blur-md p-6 md:p-10 rounded-[2.5rem] border border-white/10 shadow-2xl space-y-10">
+            {/* Added ref for auto-scroll targeting */}
+            <div ref={bookingCalendarRef} className="sticky top-40 bg-zinc-900/40 backdrop-blur-md p-6 md:p-10 rounded-[2.5rem] border border-white/10 shadow-2xl space-y-10">
               {isArchitectural ? (
                 <div className="space-y-10 text-left">
                   <div className="text-center space-y-4">
@@ -226,7 +278,8 @@ const ServiceDetail: React.FC = () => {
 
                         {bookingData.date && (
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-2 animate-in fade-in">
-                            {['09:00 AM', '11:00 AM', '01:00 PM', '03:00 PM', '05:00 PM'].map(slot => (
+                            {/* Dynamic time slots based on day of week */}
+                            {getTimeSlotsForDate(bookingData.date).map(slot => (
                               <button key={slot} onClick={() => setBookingData({...bookingData, time: slot})} className={`py-3 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${bookingData.time === slot ? 'bg-brand border-brand text-white' : 'bg-white/5 border-white/10 text-zinc-500'}`}>{slot}</button>
                             ))}
                           </div>

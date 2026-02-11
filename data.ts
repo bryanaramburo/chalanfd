@@ -55,7 +55,7 @@ export const SERVICES: Service[] = [
     fullDescription: "Oxidized, yellowed headlights don't just look bad—they're a safety hazard. Our multi-stage restoration process removes years of haze and seals the lens with a UV-resistant coating to keep them clear for years to come.",
     image: "https://i.imgur.com/sX7l4Ym.jpeg",
     packages: [
-      { name: "Standard Restoration", price: 100, description: "Full cleaning and UV sealing for both headlights. Charge is $100 a set." }
+      { name: "Standard Restoration", price: 120, description: "Full cleaning and UV sealing for both headlights. Charge is $120 a set." }
     ]
   },
   {

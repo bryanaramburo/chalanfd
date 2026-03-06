@@ -32,10 +32,10 @@ export const SERVICES: Service[] = [
     fullDescription: "Transform your vehicle with our professional tinting services. We offer high-performance films that block up to 99% of UV rays, reduce interior temperatures, and provide unmatched privacy and style. Whether you're looking for standard carbon or high-tech ceramic, we have the perfect solution for your ride.",
     image: "https://i.imgur.com/7UL3kU2.jpeg",
     packages: [
-      { name: "Standard All Around (Excluding Windshield)", price: 220, description: "Quality carbon film with 1 year warranty." },
-      { name: "Standard All Around (Including Windshield)", price: 320, description: "Complete carbon coverage for full protection." },
-      { name: "Ceramic All Around (Excluding Windshield)", price: 320, description: "Premium ceramic film with lifetime warranty." },
-      { name: "Ceramic All Around (Including Windshield)", price: 420, description: "Ultimate ceramic package for max heat rejection." }
+      { name: "Standard All Around (Excluding Windshield)", price: 250, description: "Quality carbon film with 1 year warranty." },
+      { name: "Standard All Around (Including Windshield)", price: 350, description: "Complete carbon coverage for full protection." },
+      { name: "Ceramic All Around (Excluding Windshield)", price: 350, description: "Premium ceramic film with lifetime warranty." },
+      { name: "Ceramic All Around (Including Windshield)", price: 450, description: "Ultimate ceramic package for max heat rejection." }
     ]
   },
   {
